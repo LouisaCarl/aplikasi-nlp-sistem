@@ -1,0 +1,14 @@
+{
+    "users": {
+        "William": {
+            "password": "william123",
+            "xp": 40,
+            "gems": 120,
+            "streak": 1,
+            "progress": 1,
+            "hearts": 0,
+            "last_played": "2026-06-18",
+            "join_date": "2026-06-18"
+        }
+    }
+}
