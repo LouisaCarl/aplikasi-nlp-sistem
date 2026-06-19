@@ -20,12 +20,7 @@ def load_db():
     if not os.path.exists(DB_FILE):
         return {"users": {}}
     with open(DB_FILE, 'r') as f:
-        data = json.load(f)
-        # Skenario Migrasi: Pastikan atribut timestamp pengisian hati ada
-        for username, user_info in data["users"].items():
-            if "next_heart_timestamp" not in user_info:
-                user_info["next_heart_timestamp"] = 0
-        return data
+        return json.load(f)
 
 def save_db(data):
     with open(DB_FILE, 'w') as f:
@@ -55,7 +50,7 @@ MATERI_SOAL = {
         {"q": "Teknisi menulis: 'Arus pada motor A tidak stabil dan suhunya 80C'. Teknik NLP apa untuk mengekstrak angka suhu?", "options": ["Named Entity Recognition (NER)", "Stopword Removal", "Text Generation"], "ans": "Named Entity Recognition (NER)"},
         {"q": "Jika kita ingin AI mendeteksi apakah log error bermakna 'Kritis' atau 'Aman', kita menggunakan?", "options": ["Sentiment Analysis / Text Classification", "Image Processing", "Speech to Text"], "ans": "Sentiment Analysis / Text Classification"},
         {"q": "Kata mana yang sebaiknya dihapus (Stopwords) sebelum menganalisis log sistem?", "options": ["Tegangan", "Dan, Di, Ke, Dari", "Resistansi"], "ans": "Dan, Di, Ke, Dari"},
-        {"q": "Mengapa analisis log berbasis NLP lebih efisien?", "options": ["Karena AI bisa membaca jutaan baris data log dalam hitungan detik", "Karena AI tidak butuh listrik", "Because laporan selalu terformat JSON"], "ans": "Karena AI bisa membaca jutaan baris data log dalam hitungan detik"},
+        {"q": "Mengapa analisis log berbasis NLP lebih efisien?", "options": ["Because AI bisa membaca jutaan baris data log dalam hitungan detik", "Because AI tidak butuh listrik", "Because laporan selalu terformat JSON"], "ans": "Karena AI bisa membaca jutaan baris data log dalam hitungan detik"},
         {"q": "Library Python yang sangat populer untuk memproses teks dasar adalah?", "options": ["NLTK / SpaCy", "Matplotlib", "OpenCV"], "ans": "NLTK / SpaCy"}
     ],
     "ch3_p1": [
@@ -111,41 +106,6 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# --- LOGIKA REGENERASI HATI & COUNTDOWN ---
-def handle_heart_regeneration(username):
-    user = db["users"][username]
-    now = time.time()
-    REGEN_TIME = 60  # Setel ke 60 detik untuk simulasi UAS (ganti ke 1800 jika mau 30 menit)
-    
-    if user["hearts"] < 5:
-        # Jika belum ada penanda waktu pengisian, buat sekarang
-        if user.get("next_heart_timestamp", 0) == 0:
-            user["next_heart_timestamp"] = now + REGEN_TIME
-            save_db(db)
-            
-        # Proses penambahan hati jika waktu tunggu sudah terlewati
-        while now >= user["next_heart_timestamp"] and user["hearts"] < 5:
-            user["hearts"] += 1
-            user["next_heart_timestamp"] += REGEN_TIME
-            
-        if user["hearts"] == 5:
-            user["next_heart_timestamp"] = 0
-            save_db(db)
-            return "Penuh"
-            
-        save_db(db)
-        
-        # Hitung sisa waktu mundur
-        remaining = int(user["next_heart_timestamp"] - now)
-        if remaining > 0:
-            mins, secs = divmod(remaining, 60)
-            return f"⏳ {mins:02d}:{secs:02d}"
-    else:
-        if user.get("next_heart_timestamp", 0) != 0:
-            user["next_heart_timestamp"] = 0
-            save_db(db)
-    return "Penuh"
-
 # --- FUNGSI UPDATE STREAK ---
 def check_and_update_streak(username):
     user = db["users"][username]
@@ -163,7 +123,7 @@ def check_and_update_streak(username):
 
 # --- FUNGSI AXIOM GENIE ---
 def render_genie():
-    with st.popover("🧞‍♂️ Tanya Genie"):
+    with st.popover("静态 Tanya Genie"):
         st.markdown("**Asisten AI & NLP**")
         chat_container = st.container(height=350)
         with chat_container:
@@ -195,8 +155,6 @@ def auth_page():
             if st.button("Masuk", use_container_width=True, type="primary"):
                 if log_user in db["users"] and db["users"][log_user]["password"] == log_pass:
                     if "join_date" not in db["users"][log_user]: db["users"][log_user]["join_date"] = str(date.today())
-                    if "hearts" not in db["users"][log_user]: db["users"][log_user]["hearts"] = 5
-                    if "next_heart_timestamp" not in db["users"][log_user]: db["users"][log_user]["next_heart_timestamp"] = 0
                     save_db(db)
                     st.session_state.current_user = log_user
                     st.session_state.logged_in = True
@@ -211,8 +169,7 @@ def auth_page():
                     st.warning("Username sudah terpakai!")
                 else:
                     db["users"][reg_user] = {
-                        "password": reg_pass, "xp": 0, "gems": 100, "streak": 0, "progress": 0, 
-                        "hearts": 5, "last_played": "", "join_date": str(date.today()), "next_heart_timestamp": 0
+                        "password": reg_pass, "xp": 0, "gems": 100, "streak": 0, "progress": 0, "join_date": str(date.today())
                     }
                     save_db(db)
                     st.success("Pendaftaran berhasil! Silakan Masuk.")
@@ -274,19 +231,16 @@ def lesson_page():
 def main_dashboard():
     user = db["users"][st.session_state.current_user]
     
-    # Jalankan perhitungan regenerasi hati & ambil teks sisa waktu mundurnya
-    countdown_text = handle_heart_regeneration(st.session_state.current_user)
-    
-    # TOP METRICS
+    # TOP METRICS (Hati dirubah menjadi ∞ Super Axiom)
     c_empty, c_streak, c_gems, c_hearts = st.columns([4, 1.5, 1.5, 1.8])
     with c_streak: st.markdown(f"<div class='metric-box'>🔥 {user['streak']} Hari</div>", unsafe_allow_html=True)
     with c_gems: st.markdown(f"<div class='metric-box' style='color:#1CB0F6;'>💎 {user['gems']}</div>", unsafe_allow_html=True)
-    with c_hearts: st.markdown(f"<div class='metric-box' style='color:#FF4B4B;'>❤️ {user['hearts']} ({countdown_text})</div>", unsafe_allow_html=True)
+    with c_hearts: st.markdown(f"<div class='metric-box' style='color:#FF4B4B; border-color:#CE82FF;'>💖 Hati: ∞</div>", unsafe_allow_html=True)
 
     st.markdown(f"""
     <div class="header-banner">
         <h2>Siap mengubah ide rekayasa elektro Anda menjadi nyata, {st.session_state.current_user}? 🚀</h2>
-        <p style="margin:0;">Selesaikan pelajaran harian untuk menjaga agar api streak tidak padam!</p>
+        <p style="margin:0;">Fitur Super Axiom Aktif: Belajar tanpa batas tanpa takut kehabisan nyawa!</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -300,16 +254,9 @@ def main_dashboard():
             st.write("Apa itu NLP dan kenapa sistem kontrol membutuhkannya?")
         with c2:
             st.write("<br>", unsafe_allow_html=True)
-            if st.button("MULAI 🎯 (-1 ❤️)", key="b1", use_container_width=True):
-                if user['hearts'] > 0:
-                    user['hearts'] -= 1
-                    # Jika hati berkurang dari penuh (5 ke 4), picu hitung mundur pengisian pertama
-                    if user["hearts"] == 4:
-                        user["next_heart_timestamp"] = time.time() + 60 # 60 detik regenerasi
-                    save_db(db)
-                    st.session_state.active_lesson = "ch1_p1"
-                    st.rerun()
-                else: st.error("Hati habis! Buka Toko untuk mengisi ulang.")
+            if st.button("MULAI MATERI 🎯", key="b1", use_container_width=True):
+                st.session_state.active_lesson = "ch1_p1"
+                st.rerun()
         st.markdown("</div>", unsafe_allow_html=True)
 
     # --- BAB 2 ---
@@ -324,14 +271,9 @@ def main_dashboard():
         with c2:
             st.write("<br>", unsafe_allow_html=True)
             if user["progress"] >= 1:
-                if st.button("MULAI 🎯 (-1 ❤️)", key="b2", use_container_width=True):
-                    if user['hearts'] > 0:
-                        user['hearts'] -= 1
-                        if user["hearts"] == 4: user["next_heart_timestamp"] = time.time() + 60
-                        save_db(db)
-                        st.session_state.active_lesson = "ch2_p1"
-                        st.rerun()
-                    else: st.error("Hati habis!")
+                if st.button("MULAI MATERI 🎯", key="b2", use_container_width=True):
+                    st.session_state.active_lesson = "ch2_p1"
+                    st.rerun()
             else:
                 st.button("Terkunci 🔒", key="b2_lock", disabled=True, use_container_width=True)
         st.markdown("</div>", unsafe_allow_html=True)
@@ -348,14 +290,9 @@ def main_dashboard():
         with c2:
             st.write("<br>", unsafe_allow_html=True)
             if user["progress"] >= 2:
-                if st.button("MULAI 🎯 (-1 ❤️)", key="b3", use_container_width=True):
-                    if user['hearts'] > 0:
-                        user['hearts'] -= 1
-                        if user["hearts"] == 4: user["next_heart_timestamp"] = time.time() + 60
-                        save_db(db)
-                        st.session_state.active_lesson = "ch3_p1"
-                        st.rerun()
-                    else: st.error("Hati habis!")
+                if st.button("MULAI MATERI 🎯", key="b3", use_container_width=True):
+                    st.session_state.active_lesson = "ch3_p1"
+                    st.rerun()
             else:
                 st.button("Terkunci 🔒", key="b3_lock", disabled=True, use_container_width=True)
         st.markdown("</div>", unsafe_allow_html=True)
@@ -373,24 +310,11 @@ def leaderboard_page():
 # --- HALAMAN TOKO ---
 def shop_page():
     user = db["users"][st.session_state.current_user]
-    st.title("🛒 Toko Item")
+    st.title("🛒 Toko Item Premium")
     st.markdown(f"### Saldo Anda: 💎 {user['gems']} Permata")
     st.divider()
     
-    c1, c2 = st.columns([3, 1])
-    with c1:
-        st.markdown("#### ❤️ Isi Penuh Hati (5 Nyawa)")
-        st.write("Penuhkan kembali nyawa Anda untuk terus belajar tanpa henti.")
-    with c2:
-        if st.button("Beli - 50 💎", use_container_width=True, type="primary"):
-            if user['gems'] >= 50:
-                user['gems'] -= 50
-                user['hearts'] = 5
-                user['next_heart_timestamp'] = 0 # Reset waktu mundur karena sudah penuh
-                save_db(db)
-                st.success("Hati terisi penuh!")
-                time.sleep(1); st.rerun()
-            else: st.error("Permata tidak cukup.")
+    st.info("✨ **Status Akun:** Anda berada dalam Mode Pengembang / Super Axiom. Akses Hati Tidak Terbatas (∞) telah aktif otomatis secara gratis!")
 
 # --- HALAMAN PROFIL ---
 def profile_page():
