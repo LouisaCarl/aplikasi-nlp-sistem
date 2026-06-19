@@ -50,7 +50,7 @@ MATERI_SOAL = {
         {"q": "Teknisi menulis: 'Arus pada motor A tidak stabil dan suhunya 80C'. Teknik NLP apa untuk mengekstrak angka suhu?", "options": ["Named Entity Recognition (NER)", "Stopword Removal", "Text Generation"], "ans": "Named Entity Recognition (NER)"},
         {"q": "Jika kita ingin AI mendeteksi apakah log error bermakna 'Kritis' atau 'Aman', kita menggunakan?", "options": ["Sentiment Analysis / Text Classification", "Image Processing", "Speech to Text"], "ans": "Sentiment Analysis / Text Classification"},
         {"q": "Kata mana yang sebaiknya dihapus (Stopwords) sebelum menganalisis log sistem?", "options": ["Tegangan", "Dan, Di, Ke, Dari", "Resistansi"], "ans": "Dan, Di, Ke, Dari"},
-        {"q": "Mengapa analisis log berbasis NLP lebih efisien?", "options": ["Because AI bisa membaca jutaan baris data log dalam hitungan detik", "Because AI tidak butuh listrik", "Because laporan selalu terformat JSON"], "ans": "Karena AI bisa membaca jutaan baris data log dalam hitungan detik"},
+        {"q": "Mengapa analisis log berbasis NLP lebih efisien?", "options": ["Karena AI bisa membaca jutaan baris data log dalam hitungan detik", "Karena AI tidak butuh listrik", "Karena laporan selalu terformat JSON"], "ans": "Karena AI bisa membaca jutaan baris data log dalam hitungan detik"},
         {"q": "Library Python yang sangat populer untuk memproses teks dasar adalah?", "options": ["NLTK / SpaCy", "Matplotlib", "OpenCV"], "ans": "NLTK / SpaCy"}
     ],
     "ch3_p1": [
@@ -89,19 +89,28 @@ st.markdown("""
     .course-card { background-color: #202F36; padding: 20px; border-radius: 15px; border: 2px solid #37464F; margin-bottom: 15px; }
     .locked-card { opacity: 0.4; pointer-events: none; }
     
+    /* 🧞‍♂️ Floating Genie (Super Highlight) */
     @keyframes pulseGlow {
-        0% { box-shadow: 0 0 0 0 rgba(255, 0, 122, 0.7); }
-        70% { box-shadow: 0 0 0 15px rgba(255, 0, 122, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(255, 0, 122, 0); }
+        0% { box-shadow: 0 0 0 0 rgba(206, 130, 255, 0.8); }
+        70% { box-shadow: 0 0 0 20px rgba(206, 130, 255, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(206, 130, 255, 0); }
     }
-    div[data-testid="stPopover"] {
-        position: fixed !important; bottom: 30px !important; right: 30px !important; width: fit-content !important; z-index: 99999;
+    [data-testid="stPopover"] {
+        position: fixed !important; bottom: 30px !important; right: 30px !important; z-index: 99999;
     }
-    div[data-testid="stPopover"] > button {
-        border-radius: 50px !important; padding: 12px 30px !important;
-        background: linear-gradient(135deg, #FF007A, #7A00FF) !important;
-        color: white !important; border: 2px solid #FFFFFF !important;
-        font-weight: 900; font-size: 1.1rem; animation: pulseGlow 2s infinite; width: fit-content !important;
+    [data-testid="stPopover"] button {
+        border-radius: 50px !important;
+        padding: 12px 25px !important;
+        background: linear-gradient(135deg, #CE82FF 0%, #1CB0F6 100%) !important;
+        border: none !important;
+        animation: pulseGlow 2s infinite !important;
+    }
+    /* Memaksa teks di dalam tombol Genie menjadi putih dan tebal */
+    [data-testid="stPopover"] button p {
+        color: #FFFFFF !important;
+        font-weight: 900 !important;
+        font-size: 1.1rem !important;
+        margin: 0 !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -123,7 +132,7 @@ def check_and_update_streak(username):
 
 # --- FUNGSI AXIOM GENIE ---
 def render_genie():
-    with st.popover("静态 Tanya Genie"):
+    with st.popover("🧞‍♂️ Tanya Genie"):
         st.markdown("**Asisten AI & NLP**")
         chat_container = st.container(height=350)
         with chat_container:
@@ -231,15 +240,15 @@ def lesson_page():
 def main_dashboard():
     user = db["users"][st.session_state.current_user]
     
-    # TOP METRICS (Hati dirubah menjadi ∞ Super Axiom)
+    # TOP METRICS (Kotak hati polos, tanpa border ungu)
     c_empty, c_streak, c_gems, c_hearts = st.columns([4, 1.5, 1.5, 1.8])
     with c_streak: st.markdown(f"<div class='metric-box'>🔥 {user['streak']} Hari</div>", unsafe_allow_html=True)
     with c_gems: st.markdown(f"<div class='metric-box' style='color:#1CB0F6;'>💎 {user['gems']}</div>", unsafe_allow_html=True)
-    with c_hearts: st.markdown(f"<div class='metric-box' style='color:#FF4B4B; border-color:#CE82FF;'>💖: ∞</div>", unsafe_allow_html=True)
+    with c_hearts: st.markdown(f"<div class='metric-box' style='color:#FF4B4B;'>💖: ∞</div>", unsafe_allow_html=True)
 
     st.markdown(f"""
     <div class="header-banner">
-        <h2>Siap mengubah ide rekayasa elektro Anda menjadi nyata, {st.session_state.current_user}? 🚀</h2>
+        <h2>Siap mengubah ide rekayasa Anda menjadi nyata, {st.session_state.current_user}? 🚀</h2>
         <p style="margin:0;">Fitur Super Axiom Aktif: Belajar tanpa batas tanpa takut kehabisan nyawa!</p>
     </div>
     """, unsafe_allow_html=True)
