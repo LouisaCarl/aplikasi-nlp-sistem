@@ -235,7 +235,7 @@ def main_dashboard():
     c_empty, c_streak, c_gems, c_hearts = st.columns([4, 1.5, 1.5, 1.8])
     with c_streak: st.markdown(f"<div class='metric-box'>🔥 {user['streak']} Hari</div>", unsafe_allow_html=True)
     with c_gems: st.markdown(f"<div class='metric-box' style='color:#1CB0F6;'>💎 {user['gems']}</div>", unsafe_allow_html=True)
-    with c_hearts: st.markdown(f"<div class='metric-box' style='color:#FF4B4B; border-color:#CE82FF;'>💖 Hati: ∞</div>", unsafe_allow_html=True)
+    with c_hearts: st.markdown(f"<div class='metric-box' style='color:#FF4B4B; border-color:#CE82FF;'>💖: ∞</div>", unsafe_allow_html=True)
 
     st.markdown(f"""
     <div class="header-banner">
