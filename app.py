@@ -156,8 +156,8 @@ def render_genie():
                 response = model.start_chat(history=history_gemini).send_message(prompt)
                 st.session_state.chat_history.append({"role": "assistant", "content": response.text})
                 st.rerun()
-            except Exception:
-                st.error("API Error.")
+            except Exception as e:
+                st.error(f"Error Asli: {e}") # <--- Ubah bagian ini
 
 # --- HALAMAN AUTENTIKASI ---
 def auth_page():
