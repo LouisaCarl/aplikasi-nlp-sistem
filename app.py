@@ -89,28 +89,37 @@ st.markdown("""
     .course-card { background-color: #202F36; padding: 20px; border-radius: 15px; border: 2px solid #37464F; margin-bottom: 15px; }
     .locked-card { opacity: 0.4; pointer-events: none; }
     
-    /* 🧞‍♂️ Floating Genie (Super Highlight) */
+    /* 🧞‍♂️ Floating Genie (Dikunci Ketat) */
     @keyframes pulseGlow {
         0% { box-shadow: 0 0 0 0 rgba(206, 130, 255, 0.8); }
         70% { box-shadow: 0 0 0 20px rgba(206, 130, 255, 0); }
         100% { box-shadow: 0 0 0 0 rgba(206, 130, 255, 0); }
     }
-    [data-testid="stPopover"] {
-        position: fixed !important; bottom: 30px !important; right: 30px !important; z-index: 99999;
+    div[data-testid="stPopover"] {
+        position: fixed !important; 
+        bottom: 30px !important; 
+        right: 30px !important; 
+        width: fit-content !important; /* MENGUNCI LEBAR WADAH */
+        z-index: 99999 !important;
     }
-    [data-testid="stPopover"] button {
+    div[data-testid="stPopover"] > button {
         border-radius: 50px !important;
         padding: 12px 25px !important;
         background: linear-gradient(135deg, #CE82FF 0%, #1CB0F6 100%) !important;
         border: none !important;
         animation: pulseGlow 2s infinite !important;
+        width: fit-content !important; /* MENGUNCI LEBAR TOMBOL */
+        display: inline-flex !important;
+        justify-content: center !important;
+        align-items: center !important;
     }
     /* Memaksa teks di dalam tombol Genie menjadi putih dan tebal */
-    [data-testid="stPopover"] button p {
+    div[data-testid="stPopover"] > button p {
         color: #FFFFFF !important;
         font-weight: 900 !important;
         font-size: 1.1rem !important;
         margin: 0 !important;
+        white-space: nowrap !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -240,11 +249,11 @@ def lesson_page():
 def main_dashboard():
     user = db["users"][st.session_state.current_user]
     
-    # TOP METRICS (Kotak hati polos, tanpa border ungu)
+    # TOP METRICS
     c_empty, c_streak, c_gems, c_hearts = st.columns([4, 1.5, 1.5, 1.8])
     with c_streak: st.markdown(f"<div class='metric-box'>🔥 {user['streak']} Hari</div>", unsafe_allow_html=True)
     with c_gems: st.markdown(f"<div class='metric-box' style='color:#1CB0F6;'>💎 {user['gems']}</div>", unsafe_allow_html=True)
-    with c_hearts: st.markdown(f"<div class='metric-box' style='color:#FF4B4B;'>💖: ∞</div>", unsafe_allow_html=True)
+    with c_hearts: st.markdown(f"<div class='metric-box' style='color:#FF4B4B;'>💖 Hati: ∞</div>", unsafe_allow_html=True)
 
     st.markdown(f"""
     <div class="header-banner">
