@@ -10,7 +10,7 @@ import pandas as pd
 st.set_page_config(page_title="Axiom Academy", page_icon="🦉", layout="wide", initial_sidebar_state="expanded")
 
 # API KEY
-API_KEY = "AQ.Ab8RN6K8M1Se5F-xxYQnICesETA_jh5wYmKyqpECa6mYSPZRIw"
+API_KEY = st.secrets["GEMINI_API_KEY"]
 genai.configure(api_key=API_KEY)
 
 # --- SISTEM DATABASE LOKAL ---
